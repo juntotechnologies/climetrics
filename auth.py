@@ -3,6 +3,9 @@ from models import authenticate_user, create_access_token, User, get_db
 from datetime import timedelta
 
 
+st.set_page_config(page_title="Your App Title", page_icon=":smiley:", layout="wide")
+
+
 if 'username' not in st.session_state:
     st.session_state.username = 'default_username'# Initialize username in session state
 
