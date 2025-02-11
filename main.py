@@ -15,11 +15,12 @@ st.set_page_config(
     page_title="Surgical Metrics Dashboard", page_icon="🏥", layout="wide"
 )
 
-
+# Initialize username in session state
 if 'username' not in st.session_state:
-    st.session_state.username = 'default_username'# Initialize username in session state
+    st.session_state.username = 'default_username'
 
-st.write(f"Hello {st.session_state.username}!")# Display username
+# Display username
+st.write(f"Hello {st.session_state.username}!")
 
 # Apply custom styles
 apply_custom_styles()
@@ -36,70 +37,40 @@ if "initialized" not in st.session_state:
 if not check_auth():
     st.stop()
 
-# Get data from database
-db = next(get_db())
-data = get_procedures_df(db)
+# Landing page content
+st.title("Welcome to the Surgical Metrics Dashboard")
+st.markdown("""
+This dashboard provides insights into various surgical metrics, including:
+- Length of Stay (LOS) Comparison
+- Complication Rate Chart
+- Stage Distribution Chart
 
-# Add logout button in sidebar
-if st.sidebar.button("Logout"):
-    from auth import logout
+Use the navigation options below to explore the different sections of the dashboard.
+""")
 
-    logout()
+# Navigation options
+if st.button("View LOS Comparison"):
+    st.session_state.page = "los_comparison"
+elif st.button("View Complication Rate Chart"):
+    st.session_state.page = "complication_rate_chart"
+elif st.button("View Stage Distribution Chart"):
+    st.session_state.page = "stage_distribution_chart"
+else:
+    st.session_state.page = "landing"
 
-# Header
-st.title("🏥 Surgical Metrics Dashboard")
-st.markdown(
-    f"Welcome, {st.session_state.username}! Compare your performance metrics with colleagues"
-)
-
-# Sidebar filters
-st.sidebar.header("Filters")
-
-# Service selection
-service = st.sidebar.selectbox(
-    "Select Service", options=sorted(data["service"].unique())
-)
-
-# Surgeon selection
-surgeons = sorted(data[data["service"] == service]["surgeon"].unique())
-
-current_surgeon = st.sidebar.selectbox("Select Surgeon", options=surgeons)
-
-# Metric selection
-st.sidebar.header("Metrics")
-selected_metric = st.sidebar.radio(
-    "Select Metric to Display",
-    options=[
-        "Length of Stay",
-        "Complication Rates",
-        "T-Stage Distribution",
-        "P-Stage Distribution",
-    ],
-)
-
-# Calculate metrics
-metrics = get_surgeon_metrics(db, service, current_surgeon)
-
-# Display selected visualization
-st.subheader(f"{selected_metric} Comparison")
-
-if selected_metric == "Length of Stay":
-    fig = create_los_comparison(data, service, current_surgeon)
-elif selected_metric == "Complication Rates":
-    fig = create_complication_rate_chart(data, service, current_surgeon)
-elif selected_metric == "T-Stage Distribution":
-    fig = create_stage_distribution_chart(data, service, current_surgeon, "t_stage")
-else:  # P-Stage Distribution
-    fig = create_stage_distribution_chart(data, service, current_surgeon, "p_stage")
-
-st.plotly_chart(fig, use_container_width=True)
-
-# Footer
-st.markdown(
-    """
-    <div style='margin-top: 50px; text-align: center; color: #666;'>
-        <small>Data is stored in a PostgreSQL database.</small>
-    </div>
-""",
-    unsafe_allow_html=True,
-)
+# Display the selected page
+if st.session_state.page == "los_comparison":
+    st.header("Length of Stay (LOS) Comparison")
+    # Add your LOS comparison code here
+    create_los_comparison()
+elif st.session_state.page == "complication_rate_chart":
+    st.header("Complication Rate Chart")
+    # Add your complication rate chart code here
+    create_complication_rate_chart()
+elif st.session_state.page == "stage_distribution_chart":
+    st.header("Stage Distribution Chart")
+    # Add your stage distribution chart code here
+    create_stage_distribution_chart()
+else:
+    st.header("Landing Page")
+    st.write("Please select an option from the navigation above.")
