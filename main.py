@@ -15,6 +15,12 @@ st.set_page_config(
     page_title="Surgical Metrics Dashboard", page_icon="🏥", layout="wide"
 )
 
+
+if 'username' not in st.session_state:
+    st.session_state.username = 'default_username'# Initialize username in session state
+
+st.write(f"Hello {st.session_state.username}!")# Display username
+
 # Apply custom styles
 apply_custom_styles()
 
