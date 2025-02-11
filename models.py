@@ -1,4 +1,13 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, Date, ForeignKey
+from sqlalchemy import (
+    create_engine,
+    Column,
+    Integer,
+    String,
+    Float,
+    Boolean,
+    Date,
+    ForeignKey,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 import os
@@ -6,8 +15,12 @@ import bcrypt
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Get database URL from environment variables
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Create database engine
 engine = create_engine(DATABASE_URL)
@@ -20,6 +33,7 @@ SECRET_KEY = "your-secret-key-keep-it-secret"  # In production, use environment 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -30,11 +44,14 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     def verify_password(self, password: str) -> bool:
-        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+        return bcrypt.checkpw(
+            password.encode("utf-8"), self.password_hash.encode("utf-8")
+        )
 
     @staticmethod
     def get_password_hash(password: str) -> str:
-        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
 
 class Surgeon(Base):
     __tablename__ = "surgeons"
@@ -42,6 +59,7 @@ class Surgeon(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
     procedures = relationship("Procedure", back_populates="surgeon")
+
 
 class Procedure(Base):
     __tablename__ = "procedures"
@@ -58,8 +76,10 @@ class Procedure(Base):
 
     surgeon = relationship("Surgeon", back_populates="procedures")
 
+
 # Create tables
 Base.metadata.create_all(bind=engine)
+
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -71,6 +91,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -81,12 +102,14 @@ def verify_token(token: str):
     except JWTError:
         return None
 
+
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
 
 def authenticate_user(db, username: str, password: str):
     user = db.query(User).filter(User.username == username).first()
