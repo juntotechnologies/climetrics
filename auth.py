@@ -4,9 +4,6 @@ from datetime import timedelta
 
 
 
-
-
-
 def login_button():
     """Add login button to the top right corner"""
     st.markdown(
