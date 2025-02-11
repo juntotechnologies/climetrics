@@ -1,4 +1,3 @@
-PORT=${PORT:-8501} 
 mkdir -p ~/.streamlit/
 
 echo "[general]
