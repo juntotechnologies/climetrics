@@ -14,6 +14,16 @@ const LandingPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
+  
+  // Create refs for each section
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const aboutRef = useRef<HTMLDivElement>(null);
+  const contactRef = useRef<HTMLDivElement>(null);
+
+  // Handle scrolling to each section
+  const scrollToFeatures = () => featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToAbout = () => aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -78,9 +88,24 @@ const LandingPage = () => {
         <div className="flex items-center justify-between">
           <div className="text-2xl font-bold text-primary">Climetrics</div>
           <div className="space-x-8">
-            <a href="#features" className="text-muted-foreground hover:text-primary">Features</a>
-            <a href="#about" className="text-muted-foreground hover:text-primary">About</a>
-            <a href="#contact" className="text-muted-foreground hover:text-primary">Contact Us</a>
+            <button 
+              onClick={scrollToFeatures} 
+              className="text-muted-foreground hover:text-primary bg-transparent border-none cursor-pointer"
+            >
+              Features
+            </button>
+            <button 
+              onClick={scrollToAbout} 
+              className="text-muted-foreground hover:text-primary bg-transparent border-none cursor-pointer"
+            >
+              About
+            </button>
+            <button 
+              onClick={scrollToContact} 
+              className="text-muted-foreground hover:text-primary bg-transparent border-none cursor-pointer"
+            >
+              Contact Us
+            </button>
             <Button variant="default">
               Login
             </Button>
@@ -103,7 +128,7 @@ const LandingPage = () => {
       </div>
 
       {/* Features Section */}
-      <div id="features" className="px-4 py-16 mx-auto max-w-7xl scroll-mt-20">
+      <div ref={featuresRef} className="px-4 py-16 mx-auto max-w-7xl scroll-mt-20">
         <h2 className="mb-12 text-3xl font-bold text-center">
           Comprehensive Surgical Analytics
         </h2>
@@ -121,7 +146,7 @@ const LandingPage = () => {
       </div>
 
       {/* About Section */}
-      <div id="about" className="px-4 py-16 mx-auto max-w-7xl scroll-mt-20">
+      <div ref={aboutRef} className="px-4 py-16 mx-auto max-w-7xl scroll-mt-20">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="mb-4 text-3xl font-bold">About Our Platform</h2>
           <p className="text-lg text-muted-foreground">
@@ -135,7 +160,7 @@ const LandingPage = () => {
       </div>
       
       {/* Contact Section */}
-      <div id="contact" className="px-4 py-16 mx-auto max-w-7xl bg-muted/30 scroll-mt-20">
+      <div ref={contactRef} className="px-4 py-16 mx-auto max-w-7xl bg-muted/30 scroll-mt-20">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="mb-4 text-3xl font-bold">Get in Touch</h2>
           <p className="text-lg text-muted-foreground mb-8">
