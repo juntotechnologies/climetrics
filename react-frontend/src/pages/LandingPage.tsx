@@ -1,7 +1,53 @@
-import { BarChart2, Shield, ActivitySquare, HeartPulse, ArrowRight } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { BarChart2, Shield, ActivitySquare, HeartPulse, ArrowRight, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import emailjs from '@emailjs/browser';
 
 const LandingPage = () => {
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+    
+    // Replace these with your actual EmailJS service ID, template ID, and public key
+    // You'll need to sign up at emailjs.com and create a template
+    emailjs.sendForm(
+      'YOUR_SERVICE_ID', 
+      'YOUR_TEMPLATE_ID',
+      formRef.current!,
+      'YOUR_PUBLIC_KEY'
+    )
+    .then((result) => {
+      console.log('Email sent successfully:', result.text);
+      setFormSubmitted(true);
+      setIsSubmitting(false);
+    })
+    .catch((error) => {
+      console.error('Failed to send email:', error);
+      setError('Failed to send your message. Please try again later.');
+      setIsSubmitting(false);
+      
+      // Fallback to mailto link if EmailJS fails
+      window.open(`mailto:shaun.porwal@gmail.com?subject=Contact from ${formData.name}&body=${formData.message}`);
+    });
+  };
+
   const features = [
     {
       icon: <BarChart2 className="w-6 h-6" />,
@@ -34,7 +80,7 @@ const LandingPage = () => {
           <div className="space-x-8">
             <a href="#features" className="text-muted-foreground hover:text-primary">Features</a>
             <a href="#about" className="text-muted-foreground hover:text-primary">About</a>
-            <a href="#pricing" className="text-muted-foreground hover:text-primary">Services Pricing</a>
+            <a href="#contact" className="text-muted-foreground hover:text-primary">Contact Us</a>
             <Button variant="default">
               Login
             </Button>
@@ -57,7 +103,7 @@ const LandingPage = () => {
       </div>
 
       {/* Features Section */}
-      <div id="features" className="px-4 py-16 mx-auto max-w-7xl">
+      <div id="features" className="px-4 py-16 mx-auto max-w-7xl scroll-mt-20">
         <h2 className="mb-12 text-3xl font-bold text-center">
           Comprehensive Surgical Analytics
         </h2>
@@ -75,7 +121,7 @@ const LandingPage = () => {
       </div>
 
       {/* About Section */}
-      <div id="about" className="px-4 py-16 mx-auto max-w-7xl">
+      <div id="about" className="px-4 py-16 mx-auto max-w-7xl scroll-mt-20">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="mb-4 text-3xl font-bold">About Our Platform</h2>
           <p className="text-lg text-muted-foreground">
@@ -88,33 +134,115 @@ const LandingPage = () => {
         </div>
       </div>
       
-      {/* Pricing Section */}
-      <div id="pricing" className="px-4 py-16 mx-auto max-w-7xl bg-muted/30">
+      {/* Contact Section */}
+      <div id="contact" className="px-4 py-16 mx-auto max-w-7xl bg-muted/30 scroll-mt-20">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="mb-4 text-3xl font-bold">Services Pricing</h2>
+          <h2 className="mb-4 text-3xl font-bold">Get in Touch</h2>
           <p className="text-lg text-muted-foreground mb-8">
-            We offer flexible pricing options to meet the needs of healthcare organizations of all sizes.
+            Interested in learning more about our services? Contact us today.
           </p>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          
+          {!showContactForm ? (
+            <Button 
+              variant="default" 
+              className="bg-black text-white hover:bg-gray-800"
+              onClick={() => setShowContactForm(true)}
+            >
+              Contact Us
+            </Button>
+          ) : formSubmitted ? (
             <div className="p-6 bg-card text-card-foreground rounded-lg shadow-sm border">
-              <h3 className="text-xl font-semibold">Basic</h3>
-              <div className="my-4 text-3xl font-bold">Free</div>
-              <p className="text-muted-foreground mb-4">For individual surgeons and small practices</p>
-              <Button variant="outline" className="w-full">Get Started</Button>
+              <h3 className="text-xl font-semibold text-green-600 mb-2">Thank You!</h3>
+              <p className="mb-4">Your message has been sent. We'll get back to you soon.</p>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setFormSubmitted(false);
+                  setShowContactForm(false);
+                  setFormData({ name: '', email: '', message: '' });
+                }}
+              >
+                Send Another Message
+              </Button>
             </div>
-            <div className="p-6 bg-card text-card-foreground rounded-lg shadow-sm border border-primary">
-              <h3 className="text-xl font-semibold">Pro</h3>
-              <div className="my-4 text-3xl font-bold">$49<span className="text-lg font-normal">/month</span></div>
-              <p className="text-muted-foreground mb-4">For surgical departments and growing healthcare systems</p>
-              <Button variant="default" className="w-full">Try Free</Button>
-            </div>
-            <div className="p-6 bg-card text-card-foreground rounded-lg shadow-sm border">
-              <h3 className="text-xl font-semibold">Enterprise</h3>
-              <div className="my-4 text-3xl font-bold">Custom</div>
-              <p className="text-muted-foreground mb-4">For large hospitals and health networks</p>
-              <Button variant="outline" className="w-full">Contact Us</Button>
-            </div>
-          </div>
+          ) : (
+            <form 
+              ref={formRef}
+              onSubmit={handleSubmit} 
+              className="bg-card p-6 rounded-lg shadow-sm border text-left"
+            >
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-sm font-medium mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded-md border border-input bg-background"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-medium mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded-md border border-input bg-background"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label htmlFor="message" className="block text-sm font-medium mb-1">
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full p-2 rounded-md border border-input bg-background"
+                  required
+                />
+              </div>
+              
+              {error && (
+                <div className="mb-4 p-2 text-white bg-red-500 rounded">
+                  {error}
+                </div>
+              )}
+              
+              <div className="flex justify-end gap-2">
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  onClick={() => setShowContactForm(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit"
+                  variant="default"
+                  className="bg-black text-white hover:bg-gray-800 gap-2"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                  {!isSubmitting && <Send className="w-4 h-4" />}
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
 
