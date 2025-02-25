@@ -3,7 +3,7 @@ name: Deploy Landing Page
 on:
   push:
     branches:
-      - landing-page
+      - gh-pages
   workflow_dispatch:
 
 permissions:
