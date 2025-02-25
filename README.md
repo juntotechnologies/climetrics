@@ -1,6 +1,6 @@
 # Climetrics Landing Page
 
-A modern landing page for Climetrics - a platform that provides powerful environmental data analytics to help organizations understand and reduce their climate impact.
+A modern landing page for Climetrics - a platform that provides powerful surgical data analytics to help healthcare organizations understand and improve surgical outcomes.
 
 ## Features
 
@@ -44,7 +44,7 @@ npm run build
 
 ## Deployment
 
-This project is configured to automatically deploy to GitHub Pages using GitHub Actions. When you push changes to the `landing-page` branch, the site will be built and deployed automatically.
+This project is configured to automatically deploy to GitHub Pages using GitHub Actions. When you push changes to the `gh-pages` branch, the site will be built and deployed automatically.
 
 ### Manual Deployment
 
