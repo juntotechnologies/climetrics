@@ -4,14 +4,7 @@ import { Button } from '../components/ui/button';
 
 const LandingPage = () => {
   const [showContactForm, setShowContactForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
   
   // Create refs for each section
@@ -31,47 +24,20 @@ const LandingPage = () => {
     }
   }, []);
 
+  // Update the page_url hidden field when the contact form is shown
+  useEffect(() => {
+    if (showContactForm && !formSubmitted) {
+      const pageUrlField = document.getElementById('page_url') as HTMLInputElement;
+      if (pageUrlField) {
+        pageUrlField.value = window.location.href;
+      }
+    }
+  }, [showContactForm, formSubmitted]);
+
   // Handle scrolling to each section
   const scrollToFeatures = () => featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
   const scrollToAbout = () => aboutRef.current?.scrollIntoView({ behavior: 'smooth' });
   const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: 'smooth' });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
-    
-    // For development environment, simulate a successful submission
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      console.log('Development mode - simulating successful submission:', formData);
-      setTimeout(() => {
-        setFormSubmitted(true);
-        setIsSubmitting(false);
-      }, 1000); // Simulate network delay
-      return;
-    }
-    
-    // In production, use form's native submission
-    // This avoids CORS issues with fetch API
-    if (formRef.current) {
-      // Set a timeout to show success message
-      // The form will be submitted and the page will navigate away,
-      // but if the user stays on the same page (like with _next parameter),
-      // they'll see the success message
-      setTimeout(() => {
-        setFormSubmitted(true);
-        setIsSubmitting(false);
-      }, 2000);
-      
-      // Submit the form natively
-      formRef.current.submit();
-    }
-  };
 
   const features = [
     {
@@ -199,7 +165,6 @@ const LandingPage = () => {
                 onClick={() => {
                   setFormSubmitted(false);
                   setShowContactForm(false);
-                  setFormData({ name: '', email: '', message: '' });
                 }}
               >
                 Send Another Message
@@ -208,10 +173,20 @@ const LandingPage = () => {
           ) : (
             <form 
               ref={formRef}
-              onSubmit={handleSubmit} 
-              className="bg-card p-6 rounded-lg shadow-sm border text-left"
-              action="https://formsubmit.co/shaun.porwal@gmail.com" 
               method="POST"
+              action="https://formsubmit.co/shaun.porwal@gmail.com" 
+              className="bg-card p-6 rounded-lg shadow-sm border text-left"
+              onSubmit={(e) => {
+                // For local development, simulate submission
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                  e.preventDefault();
+                  console.log('Development mode - simulating form submission');
+                  // Simulate a delay then show success message
+                  setTimeout(() => {
+                    setFormSubmitted(true);
+                  }, 1000);
+                }
+              }}
             >
               {/* Add honeypot field to prevent spam */}
               <input type="text" name="_honey" style={{ display: 'none' }} />
@@ -225,8 +200,8 @@ const LandingPage = () => {
               {/* Custom form source URL */}
               <input type="hidden" name="_source" value="Climetrics Landing Page" />
               
-              {/* Add page URL explicitly */}
-              <input type="hidden" name="page_url" value={window.location.href} />
+              {/* Add current URL explicitly */}
+              <input type="hidden" name="page_url" id="page_url" />
               
               {/* Add success page URL - use your GitHub Pages URL + success parameter */}
               <input type="hidden" name="_next" value="https://juntotechnologies.github.io/climetrics/?success=true" />
@@ -239,8 +214,6 @@ const LandingPage = () => {
                   type="text"
                   id="name"
                   name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
                   className="w-full p-2 rounded-md border border-input bg-background"
                   required
                 />
@@ -254,8 +227,6 @@ const LandingPage = () => {
                   type="email"
                   id="email"
                   name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
                   className="w-full p-2 rounded-md border border-input bg-background"
                   required
                 />
@@ -268,26 +239,17 @@ const LandingPage = () => {
                 <textarea
                   id="message"
                   name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
                   rows={4}
                   className="w-full p-2 rounded-md border border-input bg-background"
                   required
                 />
               </div>
               
-              {error && (
-                <div className="mb-4 p-2 text-white bg-red-500 rounded">
-                  {error}
-                </div>
-              )}
-              
               <div className="flex justify-end gap-2">
                 <Button 
                   type="button"
                   variant="outline" 
                   onClick={() => setShowContactForm(false)}
-                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
@@ -295,10 +257,9 @@ const LandingPage = () => {
                   type="submit"
                   variant="default"
                   className="bg-black text-white hover:bg-gray-800 gap-2"
-                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                  {!isSubmitting && <Send className="w-4 h-4" />}
+                  Send Message
+                  <Send className="w-4 h-4" />
                 </Button>
               </div>
             </form>
