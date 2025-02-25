@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { BarChart2, Shield, ActivitySquare, HeartPulse, ArrowRight, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
@@ -18,6 +18,18 @@ const LandingPage = () => {
   const featuresRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
+
+  // Check for form success parameter in URL
+  useEffect(() => {
+    // Check for success parameter in URL when component mounts
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      setFormSubmitted(true);
+      setShowContactForm(true);
+      // Scroll to contact section to show the success message
+      contactRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
 
   // Handle scrolling to each section
   const scrollToFeatures = () => featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -44,32 +56,21 @@ const LandingPage = () => {
       return;
     }
     
-    // Production environment - use FormSubmit
-    const formDataToSend = new FormData(formRef.current!);
-    
-    // Add the current page URL to form data
-    formDataToSend.append('_url', window.location.href);
-    
-    fetch('https://formsubmit.co/shaun.porwal@gmail.com', {
-      method: 'POST',
-      body: formDataToSend
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      console.log('Email sent successfully');
-      setFormSubmitted(true);
-      setIsSubmitting(false);
-    })
-    .catch(error => {
-      console.error('Failed to send email:', error);
-      setError('Failed to send your message. Please try again later.');
-      setIsSubmitting(false);
+    // In production, use form's native submission
+    // This avoids CORS issues with fetch API
+    if (formRef.current) {
+      // Set a timeout to show success message
+      // The form will be submitted and the page will navigate away,
+      // but if the user stays on the same page (like with _next parameter),
+      // they'll see the success message
+      setTimeout(() => {
+        setFormSubmitted(true);
+        setIsSubmitting(false);
+      }, 2000);
       
-      // Fallback to mailto link if form submission fails
-      window.open(`mailto:shaun.porwal@gmail.com?subject=Contact from ${formData.name}&body=${formData.message}`);
-    });
+      // Submit the form natively
+      formRef.current.submit();
+    }
   };
 
   const features = [
