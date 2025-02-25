@@ -47,6 +47,9 @@ const LandingPage = () => {
     // Production environment - use FormSubmit
     const formDataToSend = new FormData(formRef.current!);
     
+    // Add the current page URL to form data
+    formDataToSend.append('_url', window.location.href);
+    
     fetch('https://formsubmit.co/shaun.porwal@gmail.com', {
       method: 'POST',
       body: formDataToSend
@@ -206,12 +209,23 @@ const LandingPage = () => {
               ref={formRef}
               onSubmit={handleSubmit} 
               className="bg-card p-6 rounded-lg shadow-sm border text-left"
+              action="https://formsubmit.co/shaun.porwal@gmail.com" 
+              method="POST"
             >
               {/* Add honeypot field to prevent spam */}
               <input type="text" name="_honey" style={{ display: 'none' }} />
               
               {/* Disable captcha */}
               <input type="hidden" name="_captcha" value="false" />
+              
+              {/* Custom subject line */}
+              <input type="hidden" name="_subject" value="New Contact Form Submission from Climetrics" />
+              
+              {/* Custom form source URL */}
+              <input type="hidden" name="_source" value="Climetrics Landing Page" />
+              
+              {/* Add page URL explicitly */}
+              <input type="hidden" name="page_url" value={window.location.href} />
               
               {/* Add success page URL - use your GitHub Pages URL + success parameter */}
               <input type="hidden" name="_next" value="https://juntotechnologies.github.io/climetrics/?success=true" />
