@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { BarChart2, Shield, ActivitySquare, HeartPulse, ArrowRight, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import emailjs from '@emailjs/browser';
 
 const LandingPage = () => {
   const [showContactForm, setShowContactForm] = useState(false);
@@ -35,25 +34,37 @@ const LandingPage = () => {
     setIsSubmitting(true);
     setError('');
     
-    // Replace these with your actual EmailJS service ID, template ID, and public key
-    // You'll need to sign up at emailjs.com and create a template
-    emailjs.sendForm(
-      'YOUR_SERVICE_ID', 
-      'YOUR_TEMPLATE_ID',
-      formRef.current!,
-      'YOUR_PUBLIC_KEY'
-    )
-    .then((result) => {
-      console.log('Email sent successfully:', result.text);
+    // For development environment, simulate a successful submission
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      console.log('Development mode - simulating successful submission:', formData);
+      setTimeout(() => {
+        setFormSubmitted(true);
+        setIsSubmitting(false);
+      }, 1000); // Simulate network delay
+      return;
+    }
+    
+    // Production environment - use FormSubmit
+    const formDataToSend = new FormData(formRef.current!);
+    
+    fetch('https://formsubmit.co/shaun.porwal@gmail.com', {
+      method: 'POST',
+      body: formDataToSend
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log('Email sent successfully');
       setFormSubmitted(true);
       setIsSubmitting(false);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('Failed to send email:', error);
       setError('Failed to send your message. Please try again later.');
       setIsSubmitting(false);
       
-      // Fallback to mailto link if EmailJS fails
+      // Fallback to mailto link if form submission fails
       window.open(`mailto:shaun.porwal@gmail.com?subject=Contact from ${formData.name}&body=${formData.message}`);
     });
   };
@@ -196,6 +207,15 @@ const LandingPage = () => {
               onSubmit={handleSubmit} 
               className="bg-card p-6 rounded-lg shadow-sm border text-left"
             >
+              {/* Add honeypot field to prevent spam */}
+              <input type="text" name="_honey" style={{ display: 'none' }} />
+              
+              {/* Disable captcha */}
+              <input type="hidden" name="_captcha" value="false" />
+              
+              {/* Add success page URL - use your GitHub Pages URL + success parameter */}
+              <input type="hidden" name="_next" value="https://juntotechnologies.github.io/climetrics/?success=true" />
+              
               <div className="mb-4">
                 <label htmlFor="name" className="block text-sm font-medium mb-1">
                   Name
