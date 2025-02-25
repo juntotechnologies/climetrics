@@ -8,6 +8,7 @@ A modern landing page for Climetrics - a platform that provides powerful surgica
 - Responsive design with Tailwind CSS
 - Clean, professional UI using shadcn/ui components
 - Automatic deployment with GitHub Actions
+- Contact form with EmailJS integration
 
 ## Development
 
@@ -15,6 +16,7 @@ A modern landing page for Climetrics - a platform that provides powerful surgica
 
 - Node.js (v18+)
 - npm or yarn
+- EmailJS account (for contact form)
 
 ### Installation
 
@@ -27,7 +29,29 @@ cd climetrics
 cd react-frontend
 
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
+```
+
+### EmailJS Setup
+
+To enable the contact form functionality:
+
+1. Sign up at [EmailJS](https://www.emailjs.com/)
+2. Create a new Email Service (Gmail, Outlook, etc.)
+3. Create an Email Template with the following variables:
+   - `name` - Sender's name
+   - `email` - Sender's email
+   - `message` - Message content
+4. Get your Service ID, Template ID, and Public Key
+5. Update these values in `src/pages/LandingPage.tsx`:
+
+```typescript
+emailjs.sendForm(
+  'YOUR_SERVICE_ID', 
+  'YOUR_TEMPLATE_ID',
+  formRef.current!,
+  'YOUR_PUBLIC_KEY'
+)
 ```
 
 ### Running Locally
