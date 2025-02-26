@@ -1,0 +1,92 @@
+/* General styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
+}
+
+/* Dashboard metrics cards */
+.metric-card {
+    background-color: #f8f9fa;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin: 0.75rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #0066cc;
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    font-size: 1rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+/* Chart containers */
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Navigation styles */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: #0066cc !important;
+}
+
+/* Form styles */
+.form-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #0066cc;
+    border-color: #0066cc;
+}
+
+.btn-primary:hover {
+    background-color: #0052a3;
+    border-color: #0052a3;
+}
+
+/* Add these styles to your existing CSS */
+.form-select {
+    min-width: 200px;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
+.form-select:focus {
+    border-color: #0066cc;
+    box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.25);
+}
+
+/* Make sure your metrics are properly spaced */
+.metric-card {
+    margin-bottom: 1rem;
+} 

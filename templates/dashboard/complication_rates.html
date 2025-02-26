@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h1>Complication Rates</h1>
+        </div>
+        <div class="col-auto">
+            <form method="get" class="d-flex align-items-center">
+                <label for="service" class="me-2">Service:</label>
+                <select name="service" id="service" class="form-select" onchange="this.form.submit()">
+                    {% for code, name in services.items %}
+                        <option value="{{ code }}" {% if code == selected_service %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        {{ plot_div|safe }}
+    </div>
+</div>
+{% endblock %} 

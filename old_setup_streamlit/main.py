@@ -61,16 +61,82 @@ else:
 # Display the selected page
 if st.session_state.page == "los_comparison":
     st.header("Length of Stay (LOS) Comparison")
-    # Add your LOS comparison code here
-    create_los_comparison()
+    
+    @st.cache_data
+    def load_data():
+        db = next(get_db())  # Get database connection
+        procedures_df = get_procedures_df(db)
+        return procedures_df
+
+    # Load the data
+    df = load_data()
+
+    # Create filters in the sidebar
+    st.sidebar.title("Filters")
+    service = st.sidebar.selectbox(
+        "Select Service",
+        options=sorted(df['service'].unique())
+    )
+
+    current_surgeon = st.sidebar.selectbox(
+        "Select Surgeon",
+        options=sorted(df['surgeon'].unique())
+    )
+
+    # Create visualization
+    los_fig = create_los_comparison(df, service, current_surgeon)
+    st.plotly_chart(los_fig)
+
 elif st.session_state.page == "complication_rate_chart":
     st.header("Complication Rate Chart")
-    # Add your complication rate chart code here
-    create_complication_rate_chart()
+    
+    @st.cache_data
+    def load_data():
+        db = next(get_db())  # Get database connection
+        procedures_df = get_procedures_df(db)
+        return procedures_df
+
+    df = load_data()
+
+    st.sidebar.title("Filters")
+    service = st.sidebar.selectbox(
+        "Select Service",
+        options=sorted(df['service'].unique())
+    )
+
+    current_surgeon = st.sidebar.selectbox(
+        "Select Surgeon",
+        options=sorted(df['surgeon'].unique())
+    )
+
+    comp_fig = create_complication_rate_chart(df, service, current_surgeon)
+    st.plotly_chart(comp_fig)
+
 elif st.session_state.page == "stage_distribution_chart":
     st.header("Stage Distribution Chart")
-    # Add your stage distribution chart code here
-    create_stage_distribution_chart()
+    
+    @st.cache_data
+    def load_data():
+        db = next(get_db())  # Get database connection
+        procedures_df = get_procedures_df(db)
+        return procedures_df
+
+    df = load_data()
+
+    st.sidebar.title("Filters")
+    service = st.sidebar.selectbox(
+        "Select Service",
+        options=sorted(df['service'].unique())
+    )
+
+    current_surgeon = st.sidebar.selectbox(
+        "Select Surgeon",
+        options=sorted(df['surgeon'].unique())
+    )
+
+    stage_fig = create_stage_distribution_chart(df, service, current_surgeon)
+    st.plotly_chart(stage_fig)
+
 else:
     st.header("Landing Page")
     st.write("Please select an option from the navigation above.")
