@@ -11,11 +11,6 @@ Using `uv` (recommended):
 uv sync
 ```
 
-Or using pip:
-```bash
-pip install -r requirements.txt
-```
-
 ### 2. Database Configuration
 
 Create a `.env` file in the root directory with the following contents:
@@ -51,3 +46,33 @@ python manage.py runserver
 ```
 
 The application will be available at `http://127.0.0.1:8000/`
+
+## Simulation Data Generation
+
+The repository includes a melanoma surgery simulation data generator for development and testing purposes.
+
+### Running the Generator
+
+To generate simulation data:
+
+```bash
+uv run simdata/generate_melanoma_data.py
+```
+
+This will create a `df_main.csv` file in the `simdata` directory containing synthetic melanoma patient data.
+
+You can customize the data generation by modifying the parameters at the top of the script:
+
+```python
+# Configuration parameters - Change these values as needed
+N_PATIENTS = 2000                # Number of patients to generate
+START_DATE = "2003-01-01"        # Start date for surgeries
+END_DATE = "2018-12-31"          # End date for surgeries
+OUTPUT_DIR = "."                  # Output directory (relative to script location)
+OUTPUT_FILE = "df_main"          # Base filename for output
+```
+
+The generated data can be used for development and testing without requiring access to real patient data.
+
+
+
