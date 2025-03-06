@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h1>Stage Distribution</h1>
+        </div>
+        <div class="col-auto">
+            <form method="get" class="d-flex align-items-center gap-3">
+                <div>
+                    <label for="service" class="me-2">Service:</label>
+                    <select name="service" id="service" class="form-select" onchange="this.form.submit()">
+                        {% for code, name in services.items %}
+                            <option value="{{ code }}" {% if code == selected_service %}selected{% endif %}>
+                                {{ name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="stage_type" class="me-2">Stage Type:</label>
+                    <select name="stage_type" id="stage_type" class="form-select" onchange="this.form.submit()">
+                        <option value="t_stage" {% if stage_type == 't_stage' %}selected{% endif %}>T Stage</option>
+                        <option value="p_stage" {% if stage_type == 'p_stage' %}selected{% endif %}>P Stage</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        {{ plot_div|safe }}
+    </div>
+</div>
+{% endblock %} 

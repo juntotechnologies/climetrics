@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h1>Dashboard</h1>
+        </div>
+        <div class="col-auto">
+            <form method="get" class="d-flex align-items-center">
+                <label for="service" class="me-2">Service:</label>
+                <select name="service" id="service" class="form-select" onchange="this.form.submit()">
+                    {% for code, name in services.items %}
+                        <option value="{{ code }}" {% if code == selected_service %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="metric-card">
+                <div class="metric-value">{{ metrics.total_procedures }}</div>
+                <div class="metric-label">Total Procedures</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="metric-card">
+                <div class="metric-value">{{ metrics.avg_length_of_stay|floatformat:1 }}</div>
+                <div class="metric-label">Average Length of Stay (days)</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="metric-card">
+                <div class="metric-value">{{ metrics.complication_rate|floatformat:1 }}%</div>
+                <div class="metric-label">Complication Rate</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <a href="{% url 'los_comparison' %}?service={{ selected_service }}" class="btn btn-primary w-100">
+                View LOS Comparison
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'complication_rates' %}?service={{ selected_service }}" class="btn btn-primary w-100">
+                View Complication Rates
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'stage_distribution' %}?service={{ selected_service }}" class="btn btn-primary w-100">
+                View Stage Distribution
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,11 +1,24 @@
+# Climetrics
 
-# To set up the `uv` environment, run
+A clinical metrics dashboard built with Django.
 
-`uv sync`
+## Setup Instructions
 
-# To set up the database and relevant credentials
+### 1. Environment Setup
 
-`touch .env` and add these contents with the filled out info:
+Using `uv` (recommended):
+```bash
+uv sync
+```
+
+Or using pip:
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Database Configuration
+
+Create a `.env` file in the root directory with the following contents:
 
 ```bash
 DATABASE_URL=postgresql://<username>:<password>@<host>/<database>?sslmode=require
@@ -16,6 +29,25 @@ PGUSER=<username>
 PGPASSWORD=<password>
 ```
 
-# To run the app, do
+Replace the placeholders (`<...>`) with your actual database credentials.
 
-`uv run streamlit run main.py`
+### 3. Django Setup
+
+Initialize the database:
+```bash
+python manage.py migrate
+```
+
+Create a superuser (admin):
+```bash
+python manage.py createsuperuser
+```
+
+### 4. Running the Application
+
+Start the Django development server:
+```bash
+python manage.py runserver
+```
+
+The application will be available at `http://127.0.0.1:8000/`
