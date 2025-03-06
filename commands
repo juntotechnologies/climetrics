@@ -1,0 +1,4 @@
+django-admin startproject climetrics
+cd climetrics
+python manage.py startapp dashboard
+python manage.py startapp authentication 
