@@ -1,78 +1,111 @@
-# Climetrics
+# Climetrics - Surgeon Rates Analysis
 
-A clinical metrics dashboard built with Django.
+This package provides tools for analyzing surgeon performance rates, with a specific focus on melanoma procedures.
 
-## Setup Instructions
+## Installation
 
-### 1. Environment Setup
-
-Using `uv` (recommended):
+1. Clone the repository:
 ```bash
-uv sync
+git clone https://github.com/yourusername/climetrics.git
+cd climetrics
 ```
 
-### 2. Database Configuration
-
-Create a `.env` file in the root directory with the following contents:
-
+2. Install the package and its dependencies:
 ```bash
-DATABASE_URL=postgresql://<username>:<password>@<host>/<database>?sslmode=require
-PGDATABASE=<database>
-PGHOST=<host>
-PGPORT=<port>
-PGUSER=<username>
-PGPASSWORD=<password>
+pip install -e .
 ```
 
-Replace the placeholders (`<...>`) with your actual database credentials.
+This will install the following required packages:
+- pandas
+- numpy
+- scikit-learn
+- statsmodels
+- patsy
 
-### 3. Django Setup
+## Input Data Format
 
-Initialize the database:
-```bash
-python manage.py migrate
-```
+The input data file should be a CSV file with the following columns:
 
-Create a superuser (admin):
-```bash
-python manage.py createsuperuser
-```
+Required columns:
+- `eventId`: Unique identifier for each procedure
+- `userId`: Surgeon identifier
+- `surgDate`: Date of surgery (YYYY-MM-DD format)
+- `yos`: Years of service
+- `age`: Patient age
+- `female`: Patient gender (0 = male, 1 = female)
+- `bmi`: Patient BMI
+- `thickness`: Melanoma thickness
+- `ulceration`: Presence of ulceration (0 = no, 1 = yes)
+- `slnd`: Sentinel Lymph Node Dissection performed (0 = no, 1 = yes)
+- `posSlnd`: Positive SLND result (0 = negative, 1 = positive)
+- `posSlndClnd`: Complete Lymph Node Dissection after positive SLND
+- Complication columns (all 0 = no, 1 = yes):
+  - `anyComp2`, `anyComp3`: Any complication (grade 2 or 3)
+  - `woundInf2`, `woundInf3`: Wound infection
+  - `cellulitis2`, `cellulitis3`: Cellulitis
+  - `seroma2`, `seroma3`: Seroma
+  - `graftComp2`, `graftComp3`: Graft complications
 
-### 4. Running the Application
+## Running the Analysis
 
-Start the Django development server:
-```bash
-python manage.py runserver
-```
-
-The application will be available at `http://127.0.0.1:8000/`
-
-## Simulation Data Generation
-
-The repository includes a melanoma surgery simulation data generator for development and testing purposes.
-
-### Running the Generator
-
-To generate simulation data:
+You can run the surgeon rates analysis using the following command:
 
 ```bash
-uv run simdata/generate_melanoma_data.py
+python -m climetrics.surgeon_rates.generate_melanoma_rates \
+    --data-path /path/to/your/data.csv \
+    --output-path /path/to/output/directory \
+    --last-surgery-date YYYY-MM-DD
 ```
 
-This will create a `df_main.csv` file in the `simdata` directory containing synthetic melanoma patient data.
+Arguments:
+- `--data-path`: Path to your input CSV file
+- `--output-path`: Directory where results will be saved
+- `--last-surgery-date`: (Optional) Last surgery date to include in the analysis
 
-You can customize the data generation by modifying the parameters at the top of the script:
-
-```python
-# Configuration parameters - Change these values as needed
-N_PATIENTS = 2000                # Number of patients to generate
-START_DATE = "2003-01-01"        # Start date for surgeries
-END_DATE = "2018-12-31"          # End date for surgeries
-OUTPUT_DIR = "."                  # Output directory (relative to script location)
-OUTPUT_FILE = "df_main"          # Base filename for output
+Example:
+```bash
+python -m climetrics.surgeon_rates.generate_melanoma_rates \
+    --data-path "C:\GitHub\climetrics\data\df_main.csv" \
+    --output-path "C:\GitHub\climetrics\results" \
+    --last-surgery-date "2023-12-31"
 ```
 
-The generated data can be used for development and testing without requiring access to real patient data.
+## Output Files
+
+The script generates two output files in the specified output directory:
+
+1. `SurgeonRates_full.csv`: Complete results including all metrics and analysis details
+2. `SurgeonRates.csv`: Trimmed version of the results with essential metrics
+
+The results include:
+- Complication rates by type and grade
+- SLND (Sentinel Lymph Node Dissection) rates
+- Positive SLND rates
+- Complete node dissection rates
+- Raw and adjusted rates
+- Case counts and statistical metrics
+
+## Features
+
+- Multiple imputation for handling missing data
+- Risk-adjusted rates using logistic regression
+- Support for different types of complications
+- Analysis by time windows
+- Automated data validation and error handling
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Verify your input data format matches the required structure
+2. Check that all required columns are present in your data file
+3. Ensure all numeric columns contain valid numbers
+4. Verify you have installed all required dependencies
+5. Check the console output for specific error messages
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!
 
 
 
