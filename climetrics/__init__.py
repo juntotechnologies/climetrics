@@ -1,0 +1,3 @@
+"""
+Climetrics package initialization
+"""

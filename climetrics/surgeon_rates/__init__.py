@@ -1,0 +1,3 @@
+"""
+Surgeon rates module initialization
+""" 
