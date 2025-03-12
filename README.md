@@ -1,12 +1,12 @@
 # Climetrics
 
-A clinical metrics dashboard built with Django and React.
+A clinical metrics dashboard built with Django.
 
 ## Repository Structure
 
 This repository is organized into two main directories:
 
-- `frontend/`: Contains all frontend code (React)
+- `frontend/`: Contains frontend templates, static files (CSS, JS, images)
 - `backend/`: Contains all backend code (Django)
 
 ## Quick Start
@@ -22,18 +22,17 @@ The easiest way to run the application is to use the provided script:
 ```
 
 This script will:
-1. Set up the necessary environments
+1. Set up the necessary environment
 2. Install dependencies
-3. Start both the frontend and backend servers
+3. Start the Django server
 
-The Django backend will be available at http://localhost:8000
-The React frontend will be available at http://localhost:3000
+The application will be available at http://localhost:8000
 
 ## Manual Setup Instructions
 
 If you prefer to set up the application manually, follow these instructions:
 
-### 1. Backend Setup
+### Backend Setup
 
 #### Environment Setup
 
@@ -74,33 +73,14 @@ Create a superuser (admin):
 python manage.py createsuperuser
 ```
 
-#### Running the Backend
+#### Running the Application
 
 Start the Django development server:
 ```bash
 python manage.py runserver
 ```
 
-The backend API will be available at `http://127.0.0.1:8000/`
-
-### 2. Frontend Setup
-
-Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-Install dependencies:
-```bash
-npm install
-```
-
-Start the development server:
-```bash
-npm start
-```
-
-The frontend application will be available at `http://localhost:3000/`
+The application will be available at `http://127.0.0.1:8000/`
 
 ## Simulation Data Generation
 
