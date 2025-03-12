@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard.apps.DashboardConfig',
     'authentication',
+    'surgeon_rates',
 ]
 
 MIDDLEWARE = [
