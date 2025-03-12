@@ -39,7 +39,7 @@ ROOT_URLCONF = 'climetrics.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(Path(BASE_DIR).parent, 'frontend', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,9 +92,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+    Path(BASE_DIR).parent / 'frontend' / 'static'
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = Path(BASE_DIR).parent / 'frontend' / 'staticfiles'
 
 # Add this new setting
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'

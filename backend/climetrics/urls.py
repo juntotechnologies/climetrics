@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as django_auth_views  # Rename to avoid conflict
 from authentication import views as auth_views
 from dashboard import views as dashboard_views
@@ -16,4 +16,7 @@ urlpatterns = [
     path('login/', django_auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.logout_view, name='logout'),
     path('register/', auth_views.register, name='register'),
+    
+    # Include Django auth URLs for additional auth views (password reset, etc.)
+    path('', include('django.contrib.auth.urls')),
 ] 

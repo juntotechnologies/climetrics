@@ -1,19 +1,33 @@
 # Climetrics
 
-A clinical metrics dashboard built with Django.
+A clinical metrics dashboard built with Django and React.
+
+## Repository Structure
+
+This repository is organized into two main directories:
+
+- `frontend/`: Contains all frontend code (React)
+- `backend/`: Contains all backend code (Django)
 
 ## Setup Instructions
 
-### 1. Environment Setup
+### 1. Backend Setup
+
+#### Environment Setup
+
+Navigate to the backend directory:
+```bash
+cd backend
+```
 
 Using `uv` (recommended):
 ```bash
 uv sync
 ```
 
-### 2. Database Configuration
+#### Database Configuration
 
-Create a `.env` file in the root directory with the following contents:
+Create a `.env` file in the `backend` directory with the following contents:
 
 ```bash
 DATABASE_URL=postgresql://<username>:<password>@<host>/<database>?sslmode=require
@@ -26,7 +40,7 @@ PGPASSWORD=<password>
 
 Replace the placeholders (`<...>`) with your actual database credentials.
 
-### 3. Django Setup
+#### Django Setup
 
 Initialize the database:
 ```bash
@@ -38,14 +52,33 @@ Create a superuser (admin):
 python manage.py createsuperuser
 ```
 
-### 4. Running the Application
+#### Running the Backend
 
 Start the Django development server:
 ```bash
 python manage.py runserver
 ```
 
-The application will be available at `http://127.0.0.1:8000/`
+The backend API will be available at `http://127.0.0.1:8000/`
+
+### 2. Frontend Setup
+
+Navigate to the frontend directory:
+```bash
+cd frontend
+```
+
+Install dependencies:
+```bash
+npm install
+```
+
+Start the development server:
+```bash
+npm start
+```
+
+The frontend application will be available at `http://localhost:3000/`
 
 ## Simulation Data Generation
 
@@ -56,10 +89,11 @@ The repository includes a melanoma surgery simulation data generator for develop
 To generate simulation data:
 
 ```bash
+cd backend
 uv run simdata/generate_melanoma_data.py
 ```
 
-This will create a `df_main.csv` file in the `simdata` directory containing synthetic melanoma patient data.
+This will create a `df_main.csv` file in the `backend/simdata` directory containing synthetic melanoma patient data.
 
 You can customize the data generation by modifying the parameters at the top of the script:
 

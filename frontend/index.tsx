@@ -1,24 +1,27 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import LandingPage from './components/LandingPage'
-import {
-  StreamlitComponentBase,
-  withStreamlitConnection,
-} from "streamlit-component-lib"
+import ReactDOM from 'react-dom/client'
 
-class LandingPageWrapper extends StreamlitComponentBase {
-  render() {
-    return <LandingPage />
-  }
+// Create a simple App component
+const App = () => {
+  return (
+    <div>
+      <h1>Climetrics Dashboard</h1>
+      <p>Welcome to the Climetrics Dashboard application.</p>
+    </div>
+  )
 }
 
-// Wrap your component with Streamlit connection
-const Component = withStreamlitConnection(LandingPageWrapper)
+// Get the root element
+const rootElement = document.getElementById('root')
 
-// Create and render component
-ReactDOM.render(
-  <React.StrictMode>
-    <Component />
-  </React.StrictMode>,
-  document.getElementById("root")
-)
+// Create a root
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement)
+  
+  // Render the App component
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  )
+}
