@@ -9,7 +9,29 @@ This repository is organized into two main directories:
 - `frontend/`: Contains all frontend code (React)
 - `backend/`: Contains all backend code (Django)
 
-## Setup Instructions
+## Quick Start
+
+The easiest way to run the application is to use the provided script:
+
+```bash
+# Run in development mode
+./app.sh dev
+
+# Run in production mode (not implemented yet)
+./app.sh prod
+```
+
+This script will:
+1. Set up the necessary environments
+2. Install dependencies
+3. Start both the frontend and backend servers
+
+The Django backend will be available at http://localhost:8000
+The React frontend will be available at http://localhost:3000
+
+## Manual Setup Instructions
+
+If you prefer to set up the application manually, follow these instructions:
 
 ### 1. Backend Setup
 
