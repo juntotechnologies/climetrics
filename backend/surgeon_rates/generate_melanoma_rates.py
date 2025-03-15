@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
 import traceback
+from tqdm import tqdm
 
 from surgeon_rates.utils.rate_generator import RateGenerator
 from surgeon_rates.utils.imputation import MultipleImputer
@@ -15,7 +16,7 @@ def generate_melanoma_rates(
 ) -> None:
     """
     Generate surgeon rates for melanoma procedures
-    
+
     Args:
         data_path: Path to the input data file
         output_path: Path to save the results
@@ -49,24 +50,24 @@ def generate_melanoma_rates(
             'graftComp2': float,
             'graftComp3': float
         })
-        
+
         print(f"Successfully loaded data with {len(all_data)} rows")
         print("Columns found:", all_data.columns.tolist())
         print("\nSample of data:")
         print(all_data.head())
         print("\nData types:")
         print(all_data.dtypes)
-        
+
         # Convert surgDate to datetime
         all_data['surgDate'] = pd.to_datetime(all_data['surgDate'])
-        
+
         # Initialize tools
         rate_generator = RateGenerator()
         imputer = MultipleImputer(n_imputations=5)
-        
+
         # Variables to impute
         vars_to_impute = ['age', 'female', 'bmi', 'thickness', 'ulceration']
-        
+
         print("\nGenerating imputations for variables:", vars_to_impute)
         imputed_values = imputer.generate_multiple_imputations(
             df=all_data,
@@ -74,28 +75,40 @@ def generate_melanoma_rates(
             patient_id='eventId'
         )
         print(f"Successfully generated {len(imputed_values)} imputations")
-        
+
         # Generate date IDs for analysis windows
         date_ids = _generate_date_ids(all_data, 'surgDate')
         print("\nGenerated date IDs:", date_ids[:5], "...")
-        
+
+        # Calculate total iterations for progress tracking
+        comp_types = ['ANY', 'WOUND', 'CELLULITIS', 'SEROMA', 'GRAFT']
+        comp_grades = ['COMPGRADE2', 'COMPGRADE3']
+
+        total_iterations = (
+            len(comp_types) * len(comp_grades) * len(date_ids) +  # Complications
+            len(date_ids) +  # SLND
+            len(date_ids) +  # Positive SLND
+            len(date_ids)    # Complete node dissection
+        )
+
+        print(f"\nTotal models to process: {total_iterations}")
+
         # Initialize results DataFrame
         user_results = pd.DataFrame()
-        
+
+        # Use tqdm for the main loop
+        pbar = tqdm(total=total_iterations, desc="Processing models")
+
         # Generate complication rates
         comp_types = ['ANY', 'WOUND', 'CELLULITIS', 'SEROMA', 'GRAFT']
         comp_grades = ['COMPGRADE2', 'COMPGRADE3']
-        
+
         for comp_type in comp_types:
             for grade in comp_grades:
                 for date_id in date_ids:
                     model_id = f"COMP.{comp_type}.{grade}.{date_id}"
                     outcome = _map_complication_outcome(comp_type, grade)
-                    
-                    print(f"\nProcessing {model_id} with outcome {outcome}")
-                    print("Data for this outcome:")
-                    print(all_data[outcome].value_counts())
-                    
+
                     results = rate_generator.generate_rate(
                         df=all_data,
                         outcome=outcome,
@@ -108,9 +121,11 @@ def generate_melanoma_rates(
                         imputed_values=imputed_values,
                         date=last_surgery_date
                     )
-                    
+
                     user_results = pd.concat([user_results, results])
-        
+                    pbar.update(1)
+                    pbar.set_postfix({'Current': f"{comp_type}-{grade}"})
+
         # Generate SLND rates
         slnd_model_ids = [f"SLND.{date_id}" for date_id in date_ids]
         for model_id in slnd_model_ids:
@@ -127,7 +142,9 @@ def generate_melanoma_rates(
                 date=last_surgery_date
             )
             user_results = pd.concat([user_results, results])
-        
+            pbar.update(1)
+            pbar.set_postfix({'Current': 'SLND'})
+
         # Generate positive SLND rates
         pos_slnd_model_ids = [f"POSSLND.{date_id}" for date_id in date_ids]
         for model_id in pos_slnd_model_ids:
@@ -144,12 +161,14 @@ def generate_melanoma_rates(
                 date=last_surgery_date
             )
             user_results = pd.concat([user_results, results])
-        
+            pbar.update(1)
+            pbar.set_postfix({'Current': 'POS-SLND'})
+
         # Generate complete node dissection rates
         clnd_model_ids = [f"CLND.{date_id}" for date_id in date_ids]
         for model_id in clnd_model_ids:
             results = rate_generator.generate_rate(
-                df=all_data[all_data['posSlnd'] == 1],  # Only for positive SLND
+                df=all_data[all_data['posSlnd'] == 1],
                 outcome='complete_node_dissection',
                 model_id=model_id,
                 model_type='LOGISTIC',
@@ -161,12 +180,16 @@ def generate_melanoma_rates(
                 date=last_surgery_date
             )
             user_results = pd.concat([user_results, results])
-        
+            pbar.update(1)
+            pbar.set_postfix({'Current': 'CLND'})
+
+        pbar.close()
+
         # Save results
         print("\nSaving results...")
         _save_results(user_results, output_path)
         print("Successfully saved results")
-        
+
     except Exception as e:
         print(f"\nError occurred: {str(e)}")
         print("\nTraceback:")
@@ -196,10 +219,10 @@ def _save_results(results: pd.DataFrame, output_path: str) -> None:
     # Create output directory if it doesn't exist
     output_dir = Path(output_path)
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Save full results
     results.to_csv(output_dir / 'SurgeonRates_full.csv', index=False)
-    
+
     # Save trimmed results (excluding certain columns or filtering as needed)
     trimmed_results = results.copy()
     # Add any trimming logic here
@@ -207,14 +230,14 @@ def _save_results(results: pd.DataFrame, output_path: str) -> None:
 
 if __name__ == '__main__':
     import argparse
-    
+
     parser = argparse.ArgumentParser(description='Generate melanoma surgeon rates')
     parser.add_argument('--data-path', required=True, help='Path to input data file')
     parser.add_argument('--output-path', required=True, help='Path to save results')
     parser.add_argument('--last-surgery-date', help='Last surgery date to include (YYYY-MM-DD)')
-    
+
     args = parser.parse_args()
-    
+
     last_date = datetime.strptime(args.last_surgery_date, '%Y-%m-%d') if args.last_surgery_date else None
-    
-    generate_melanoma_rates(args.data_path, args.output_path, last_date) 
+
+    generate_melanoma_rates(args.data_path, args.output_path, last_date)
