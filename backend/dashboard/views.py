@@ -226,4 +226,64 @@ def stage_distribution(request):
         'stage_type': stage_type
     }
     
-    return render(request, 'dashboard/stage_distribution.html', context) 
+    return render(request, 'dashboard/stage_distribution.html', context)
+
+@login_required
+def surgeon_rates(request):
+    df = pd.read_csv('output/SurgeonRates.csv')
+    selected_service = request.GET.get('service', 'Melanoma')
+    rate_type = request.GET.get('rate_type', 'SLND')  # Default to SLND rates
+    
+    # Filter rates by type (e.g., SLND, POSSLND, CLND, complications)
+    filtered_df = df[df['modelId'].str.startswith(rate_type)]
+    
+    # Create figure
+    fig = go.Figure()
+    
+    # Add scatter plot for each surgeon
+    for surgeon in filtered_df['userId'].unique():
+        surgeon_data = filtered_df[filtered_df['userId'] == surgeon]
+        
+        fig.add_trace(go.Scatter(
+            name=surgeon,
+            x=surgeon_data['modelId'],
+            y=surgeon_data['rate'] * 100,  # Convert to percentage
+            mode='lines+markers',
+            error_y=dict(
+                type='data',
+                array=(surgeon_data['upperCI'] - surgeon_data['rate']) * 100,
+                arrayminus=(surgeon_data['rate'] - surgeon_data['lowerCI']) * 100,
+                visible=True
+            )
+        ))
+    
+    # Update layout
+    fig.update_layout(
+        title=f'{rate_type} Rates by Surgeon Over Time',
+        xaxis_title='Time Period',
+        yaxis_title='Rate (%)',
+        height=600,
+        showlegend=True,
+        yaxis_range=[0, 100]
+    )
+    
+    # Rotate x-axis labels for better readability
+    fig.update_xaxes(tickangle=45)
+    
+    plot_div = fig.to_html(full_html=False)
+    
+    # Get available rate types from the data
+    rate_types = sorted(list(set([
+        model_id.split('.')[0] 
+        for model_id in df['modelId'].unique()
+    ])))
+    
+    context = {
+        'plot_div': plot_div,
+        'selected_service': selected_service,
+        'services': dict(Procedure.SERVICE_CHOICES),
+        'rate_type': rate_type,
+        'rate_types': rate_types
+    }
+    
+    return render(request, 'dashboard/surgeon_rates.html', context) 

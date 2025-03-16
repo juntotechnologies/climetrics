@@ -1,0 +1,55 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Surgeon Rates Analysis</h2>
+    
+    <!-- Service and Rate Type Selection -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="form-inline">
+                <div class="form-group mr-3">
+                    <label for="service" class="mr-2">Service:</label>
+                    <select name="service" id="service" class="form-control" onchange="this.form.submit()">
+                        {% for code, name in services.items %}
+                            <option value="{{ code }}" {% if code == selected_service %}selected{% endif %}>
+                                {{ name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="rate_type" class="mr-2">Rate Type:</label>
+                    <select name="rate_type" id="rate_type" class="form-control" onchange="this.form.submit()">
+                        {% for type in rate_types %}
+                            <option value="{{ type }}" {% if type == rate_type %}selected{% endif %}>
+                                {{ type }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Plot -->
+    <div class="card">
+        <div class="card-body">
+            {{ plot_div|safe }}
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="mt-4">
+        <h4>About this Analysis</h4>
+        <p>This visualization shows surgeon-specific rates over time with 95% confidence intervals. The rates are calculated using risk-adjusted models that account for patient factors such as:</p>
+        <ul>
+            <li>Age</li>
+            <li>Gender</li>
+            <li>BMI</li>
+            <li>Tumor characteristics (for cancer procedures)</li>
+        </ul>
+        <p>The error bars represent the 95% confidence interval for each rate. Wider intervals typically indicate fewer cases in that time period.</p>
+    </div>
+</div>
+{% endblock %} 
