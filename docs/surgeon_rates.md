@@ -33,7 +33,7 @@ To generate surgeon rates:
 
 ```bash
 cd backend
-python manage.py generate_rates
+uv run manage.py generate_rates
 ```
 
 This will analyze the simulation data and generate surgeon performance metrics, saving the results to `backend/surgeon_rates/data/surgeon_rates.csv`.
