@@ -7,14 +7,14 @@ import os
 
 # Configuration parameters - Change these values as needed
 N_PATIENTS = 1000
-START_DATE = "2013-01-01"
+START_DATE = "2014-01-01"
 END_DATE = "2018-12-31"
 OUTPUT_DIR = "."  # Save in current directory (simdata)
 OUTPUT_FILE = "df_main"
 RANDOM_SEED = 20230728
 GENERATE_RDS = False  # Set to True if you want to generate RDS file for R
 
-def generate_melanoma_data(n_patients=1000, start_date="2013-01-01", end_date="2018-12-31", seed=20230728):
+def generate_melanoma_data(n_patients=1000, start_date="2014-01-01", end_date="2018-12-31", seed=20230728):
     """
     Generate simulated data for melanoma surgeries.
 

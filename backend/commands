@@ -1,4 +1,7 @@
-django-admin startproject climetrics
+uv run django-admin startproject climetrics
 cd climetrics
-python manage.py startapp dashboard
-python manage.py startapp authentication 
+uv run manage.py startapp dashboard
+uv run manage.py startapp authentication 
+
+# Command to run process in background, and output a log so we can check what's happening
+nohup uv run manage.py generate_rates --data-file='./surgeon_rates/data/df_main.csv' >> output.log &

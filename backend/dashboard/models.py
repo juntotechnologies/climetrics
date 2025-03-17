@@ -55,3 +55,20 @@ class Procedure(models.Model):
 
     def __str__(self):
         return f"{self.service} by {self.surgeon.name} on {self.date}" 
+
+class SurgeonRate(models.Model):
+    surgeon = models.ForeignKey(Surgeon, on_delete=models.CASCADE)
+    model_id = models.CharField(max_length=100)
+    rate = models.FloatField()
+    lower_ci = models.FloatField()
+    upper_ci = models.FloatField()
+    n_cases = models.IntegerField()
+    date_generated = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['surgeon', 'model_id']),
+        ]
+
+    def __str__(self):
+        return f"{self.surgeon.name} - {self.model_id}: {self.rate:.2f}" 
