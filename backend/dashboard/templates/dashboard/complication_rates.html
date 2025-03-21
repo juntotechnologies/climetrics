@@ -1,0 +1,95 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Complication Rates Analysis</h2>
+    
+    {% if error_message %}
+    <div class="alert alert-warning" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    {% if not error_message %}
+    <!-- Basic Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Procedures</h5>
+                    <p class="card-text display-4">{{ basic_metrics.total_procedures }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Complications</h5>
+                    <p class="card-text display-4">{{ basic_metrics.total_complications }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Overall Rate</h5>
+                    <p class="card-text display-4">{{ basic_metrics.overall_rate|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if has_detailed_data %}
+    <!-- Detailed Complication Type Selection -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="form-inline">
+                <div class="form-group">
+                    <label for="rate_type" class="mr-2">Complication Type:</label>
+                    <select name="rate_type" id="rate_type" class="form-control" onchange="this.form.submit()">
+                        {% for type in comp_types %}
+                            <option value="{{ type }}" {% if type == rate_type %}selected{% endif %}>
+                                {{ type }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if plot_div %}
+    <!-- Plot -->
+    <div class="card mb-4">
+        <div class="card-body">
+            {{ plot_div|safe }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Description -->
+    <div class="mt-4">
+        <h4>About this Analysis</h4>
+        <p>This visualization shows complication rates by surgeon. The rates are calculated as the percentage of procedures with complications for each surgeon.</p>
+        
+        {% if has_detailed_data %}
+        <p>For detailed complication types, the rates are calculated using risk-adjusted models that account for patient factors such as:</p>
+        <ul>
+            <li>Age</li>
+            <li>Gender</li>
+            <li>BMI</li>
+            <li>Tumor characteristics</li>
+        </ul>
+        <p>Complication grades:</p>
+        <ul>
+            <li>Grade 2: Requiring pharmacological treatment</li>
+            <li>Grade 3: Requiring surgical, endoscopic or radiological intervention</li>
+        </ul>
+        {% endif %}
+        
+        <p>The red dashed line represents the overall average rate across all surgeons.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

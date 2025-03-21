@@ -10,9 +10,7 @@ class Surgeon(models.Model):
 
 class Procedure(models.Model):
     SERVICE_CHOICES = [
-        ('Melanoma', 'Melanoma'),
-        ('Gastrectomy', 'Gastrectomy'),
-        ('Whipple', 'Whipple'),
+        ('Melanoma', 'Melanoma')
     ]
     
     T_STAGE_CHOICES = [
