@@ -11,6 +11,8 @@ urlpatterns = [
     path('los-comparison/', dashboard_views.los_comparison, name='los_comparison'),
     path('complication-rates/', dashboard_views.complication_rates, name='complication_rates'),
     path('stage-distribution/', dashboard_views.stage_distribution, name='stage_distribution'),
+    path('surgeon-rates/', dashboard_views.surgeon_rates, name='surgeon_rates'),
+    path('users/', dashboard_views.users_list, name='users_list'),
     
     # Authentication URLs - use Django's built-in views
     path('login/', django_auth_views.LoginView.as_view(), name='login'),

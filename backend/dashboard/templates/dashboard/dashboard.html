@@ -1,0 +1,132 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Clinical Dashboard</h2>
+
+    {% if error_message %}
+    <div class="alert alert-warning" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    {% if not error_message %}
+    <!-- Basic Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Procedures</h5>
+                    <p class="card-text display-4">{{ basic_metrics.total_procedures }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Average Length of Stay</h5>
+                    <p class="card-text display-4">{{ basic_metrics.avg_los }} days</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Complication Rate</h5>
+                    <p class="card-text display-4">{{ basic_metrics.complication_rate }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rate Type Selection -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="form-inline">
+                <div class="form-group">
+                    <label for="rate_type" class="mr-2">Rate Type:</label>
+                    <select name="rate_type" id="rate_type" class="form-control" onchange="this.form.submit()">
+                        {% for type in rate_types %}
+                            <option value="{{ type }}" {% if type == selected_rate_type %}selected{% endif %}>
+                                {{ type }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Surgeon Rate Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Surgeons</h5>
+                    <p class="card-text display-4">{{ rate_metrics.total_surgeons }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Average Rate</h5>
+                    <p class="card-text display-4">{{ rate_metrics.avg_rate|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Minimum Rate</h5>
+                    <p class="card-text display-4">{{ rate_metrics.min_rate|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Maximum Rate</h5>
+                    <p class="card-text display-4">{{ rate_metrics.max_rate|floatformat:1 }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rate Plot -->
+    {% if plot_div %}
+    <div class="card mb-4">
+        <div class="card-body">
+            {{ plot_div|safe }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Links -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Links</h5>
+                    <div class="list-group">
+                        <a href="{% url 'surgeon_rates' %}" class="list-group-item list-group-item-action">
+                            View Detailed Surgeon Rates
+                        </a>
+                        <a href="{% url 'complication_rates' %}" class="list-group-item list-group-item-action">
+                            View Complication Rates
+                        </a>
+                        <a href="{% url 'los_comparison' %}" class="list-group-item list-group-item-action">
+                            View Length of Stay Analysis
+                        </a>
+                        <a href="{% url 'stage_distribution' %}" class="list-group-item list-group-item-action">
+                            View Stage Distribution
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
+{% endblock %} 

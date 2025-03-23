@@ -17,6 +17,9 @@ The easiest way to run the application is to use the provided script:
 # Run in development mode
 ./app.sh dev
 
+# For windows
+cd backend; python manage.py runserver
+
 # Run in production mode (not implemented yet)
 ./app.sh prod
 ```
